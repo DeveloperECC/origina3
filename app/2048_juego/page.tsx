@@ -1,13 +1,14 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link"; // Importar Link
 
 export default function Juego2048() {
-  const [grid, setGrid] = useState([]);
+  const [grid, setGrid] = useState<number[][]>([]);
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [won, setWon] = useState(false);
-  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   // Inicializar juego
   useEffect(() => {
@@ -26,8 +27,8 @@ export default function Juego2048() {
     setWon(false);
   };
 
-  const agregarNuevoNumero = (gridActual) => {
-    const emptyCells = [];
+  const agregarNuevoNumero = (gridActual: number[][]) => {
+    const emptyCells: { i: number; j: number }[] = [];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
         if (gridActual[i][j] === 0) {
@@ -42,7 +43,7 @@ export default function Juego2048() {
     }
   };
 
-  const moverIzquierda = (gridActual) => {
+  const moverIzquierda = (gridActual: number[][]) => {
     let moved = false;
     let newScore = score;
 
@@ -76,7 +77,7 @@ export default function Juego2048() {
     return { moved, newScore };
   };
 
-  const moverDerecha = (gridActual) => {
+  const moverDerecha = (gridActual: number[][]) => {
     let moved = false;
     let newScore = score;
 
@@ -111,11 +112,11 @@ export default function Juego2048() {
     return { moved, newScore };
   };
 
-  const transponer = (gridActual) => {
+  const transponer = (gridActual: number[][]) => {
     return gridActual[0].map((_, i) => gridActual.map(row => row[i]));
   };
 
-  const moverArriba = (gridActual) => {
+  const moverArriba = (gridActual: number[][]) => {
     let transposed = transponer(gridActual);
     const { moved, newScore } = moverIzquierda(transposed);
     const result = transponer(transposed);
@@ -129,7 +130,7 @@ export default function Juego2048() {
     return { moved, newScore };
   };
 
-  const moverAbajo = (gridActual) => {
+  const moverAbajo = (gridActual: number[][]) => {
     let transposed = transponer(gridActual);
     const { moved, newScore } = moverDerecha(transposed);
     const result = transponer(transposed);
@@ -143,7 +144,7 @@ export default function Juego2048() {
     return { moved, newScore };
   };
 
-  const verificarGameOver = (gridActual) => {
+  const verificarGameOver = (gridActual: number[][]) => {
     // Verificar si hay celdas vacías
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
@@ -168,7 +169,7 @@ export default function Juego2048() {
     return true;
   };
 
-  const mover = useCallback((direccion) => {
+  const mover = useCallback((direccion: string) => {
     if (gameOver) return;
 
     const newGrid = grid.map(row => [...row]);
@@ -209,7 +210,7 @@ export default function Juego2048() {
 
   // Controles de teclado
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
       }
@@ -235,12 +236,12 @@ export default function Juego2048() {
   }, [mover]);
 
   // Controles táctiles
-  const handleTouchStart = (e) => {
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     const touch = e.touches[0];
     setTouchStart({ x: touch.clientX, y: touch.clientY });
   };
 
-  const handleTouchEnd = (e) => {
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     const touch = e.changedTouches[0];
     const deltaX = touch.clientX - touchStart.x;
     const deltaY = touch.clientY - touchStart.y;
@@ -257,8 +258,8 @@ export default function Juego2048() {
     }
   };
 
-  const getTileColor = (value) => {
-    const colors = {
+  const getTileColor = (value: number) => {
+    const colors: { [key: number]: string } = {
       0: "#cdc1b4",
       2: "#eee4da",
       4: "#ede0c8",
@@ -272,10 +273,10 @@ export default function Juego2048() {
       1024: "#edc53f",
       2048: "#edc22e",
     };
-    return colors[value] || "#3c3a32";
+    return colors[value as keyof typeof colors] || "#3c3a32";
   };
 
-  const getTileTextColor = (value) => {
+  const getTileTextColor = (value: number) => {
     return value <= 4 ? "#776e65" : "#f9f6f2";
   };
 
@@ -374,8 +375,8 @@ export default function Juego2048() {
           gap: "10px",
           height: "100%",
         }}>
-          {grid.map((row, i) =>
-            row.map((value, j) => (
+          {grid.map((row: number[], i: number) =>
+            row.map((value: number, j: number) => (
               <div
                 key={`${i}-${j}`}
                 style={{
@@ -533,7 +534,8 @@ export default function Juego2048() {
           🔄 Nuevo juego
         </button>
 
-        <a
+        {/* Usamos Link de Next.js para el botón de Menú */}
+        <Link
           href="/"
           style={{
             padding: "12px 30px",
@@ -545,10 +547,11 @@ export default function Juego2048() {
             fontSize: "1rem",
             fontWeight: "bold",
             display: "inline-block",
+            lineHeight: "1.5", // Añadido para alinear verticalmente
           }}
         >
           ← Menú
-        </a>
+        </Link>
       </div>
 
       {/* Controles visuales para móvil */}
