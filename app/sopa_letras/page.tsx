@@ -1,17 +1,29 @@
 "use client";
 import { useState, useEffect } from "react";
 
+// --- Definición de Tipos ---
+interface Coordenada {
+  fila: number;
+  col: number;
+}
+
+interface PalabraColocada {
+  palabra: string;
+  posiciones: Coordenada[];
+}
+// --- Fin Definición de Tipos ---
+
 export default function SopaDeLetras() {
   const [nivel, setNivel] = useState("facil");
-  const [grid, setGrid] = useState([]);
-  const [palabras, setPalabras] = useState([]);
-  const [palabrasColocadas, setPalabrasColocadas] = useState([]);
-  const [seleccion, setSeleccion] = useState([]);
-  const [encontradas, setEncontradas] = useState([]);
+  const [grid, setGrid] = useState<string[][]>([]);
+  const [palabras, setPalabras] = useState<string[]>([]);
+  const [palabrasColocadas, setPalabrasColocadas] = useState<PalabraColocada[]>([]);
+  const [seleccion, setSeleccion] = useState<Coordenada[]>([]);
+  const [encontradas, setEncontradas] = useState<string[]>([]);
   const [completado, setCompletado] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
 
-  const listaPalabras = {
+  const listaPalabras: { [key: string]: string[] } = {
     facil: ["HTML", "CSS", "JS", "WEB", "TAG"],
     medio: ["REACT", "ANGULAR", "SERVER", "BROWSER", "API"],
     dificil: ["ASYNC", "FRAMEWORK", "COMPONENT", "BACKEND", "FRONTEND"],
@@ -28,7 +40,7 @@ export default function SopaDeLetras() {
       .fill(null)
       .map(() => Array(size).fill(""));
     
-    const colocadas = [];
+    const colocadas: PalabraColocada[] = [];
 
     palabrasActuales.forEach((palabra) => {
       let colocada = false;
@@ -69,7 +81,7 @@ export default function SopaDeLetras() {
     setMostrarModal(false);
   };
 
-  const puedeColocarPalabra = (grid, palabra, fila, col, direccion, size) => {
+  const puedeColocarPalabra = (grid: string[][], palabra: string, fila: number, col: number, direccion: number, size: number) => {
     const len = palabra.length;
     
     if (direccion === 0 && col + len > size) return false;
@@ -92,7 +104,7 @@ export default function SopaDeLetras() {
     return true;
   };
 
-  const colocarPalabra = (grid, palabra, fila, col, direccion) => {
+  const colocarPalabra = (grid: string[][], palabra: string, fila: number, col: number, direccion: number) => {
     for (let i = 0; i < palabra.length; i++) {
       let r = fila, c = col;
       
@@ -105,8 +117,8 @@ export default function SopaDeLetras() {
     }
   };
 
-  const getPosicionesPalabra = (fila, col, len, direccion) => {
-    const posiciones = [];
+  const getPosicionesPalabra = (fila: number, col: number, len: number, direccion: number): Coordenada[] => {
+    const posiciones: Coordenada[] = [];
     for (let i = 0; i < len; i++) {
       let r = fila, c = col;
       
@@ -120,7 +132,7 @@ export default function SopaDeLetras() {
     return posiciones;
   };
 
-  const manejarClick = (fila, col) => {
+  const manejarClick = (fila: number, col: number) => {
     const yaSeleccionada = seleccion.find(
       (pos) => pos.fila === fila && pos.col === col
     );
@@ -137,7 +149,7 @@ export default function SopaDeLetras() {
     }
   };
 
-  const sonAdyacentesEnLinea = (seleccion, fila, col) => {
+  const sonAdyacentesEnLinea = (seleccion: Coordenada[], fila: number, col: number) => {
     if (seleccion.length === 0) return true;
     if (seleccion.length === 1) return true;
     
@@ -153,7 +165,7 @@ export default function SopaDeLetras() {
     return nuevaDeltaFila === deltaFila && nuevaDeltaCol === deltaCol;
   };
 
-  const verificarPalabra = (seleccionActual) => {
+  const verificarPalabra = (seleccionActual: Coordenada[]) => {
     const letrasSeleccionadas = seleccionActual.map(
       (pos) => grid[pos.fila][pos.col]
     );
@@ -193,7 +205,7 @@ export default function SopaDeLetras() {
     }
   };
 
-  const estaEnPalabraEncontrada = (fila, col) => {
+  const estaEnPalabraEncontrada = (fila: number, col: number) => {
     return palabrasColocadas.some(item => {
       if (encontradas.includes(item.palabra)) {
         return item.posiciones.some(pos => pos.fila === fila && pos.col === col);
@@ -250,8 +262,8 @@ export default function SopaDeLetras() {
           transition: "opacity 0.3s",
         }}
       >
-        {grid.map((fila, i) =>
-          fila.map((letra, j) => {
+        {grid.map((fila: string[], i: number) =>
+          fila.map((letra: string, j: number) => {
             const estaSeleccionada = seleccion.some(
               (pos) => pos.fila === i && pos.col === j
             );
@@ -261,7 +273,7 @@ export default function SopaDeLetras() {
               <div
                 key={`${i}-${j}`}
                 onClick={() => !mostrarModal && manejarClick(i, j)}
-                onTouchStart={(e) => {
+                onTouchStart={(e: React.TouchEvent<HTMLDivElement>) => {
                   if (!mostrarModal) {
                     e.preventDefault();
                     manejarClick(i, j);
@@ -316,7 +328,7 @@ export default function SopaDeLetras() {
           justifyContent: "center",
           gap: "8px",
         }}>
-          {palabras.map((p) => (
+          {palabras.map((p: string) => (
             <span
               key={p}
               style={{
@@ -357,8 +369,8 @@ export default function SopaDeLetras() {
         <button
           onClick={generarSopa}
           disabled={mostrarModal}
-          onTouchStart={(e) => !mostrarModal && (e.currentTarget.style.transform = "scale(0.95)")}
-          onTouchEnd={(e) => !mostrarModal && (e.currentTarget.style.transform = "scale(1)")}
+          onTouchStart={(e: React.TouchEvent<HTMLButtonElement>) => !mostrarModal && (e.currentTarget.style.transform = "scale(0.95)")}
+          onTouchEnd={(e: React.TouchEvent<HTMLButtonElement>) => !mostrarModal && (e.currentTarget.style.transform = "scale(1)")}
           style={{
             padding: "12px 24px",
             backgroundColor: mostrarModal ? "#999" : "#6c757d",
@@ -378,8 +390,8 @@ export default function SopaDeLetras() {
 
         <a
           href="/"
-          onTouchStart={(e) => e.currentTarget.style.transform = "scale(0.95)"}
-          onTouchEnd={(e) => e.currentTarget.style.transform = "scale(1)"}
+          onTouchStart={(e: React.TouchEvent<HTMLAnchorElement>) => e.currentTarget.style.transform = "scale(0.95)"}
+          onTouchEnd={(e: React.TouchEvent<HTMLAnchorElement>) => e.currentTarget.style.transform = "scale(1)"}
           style={{
             padding: "12px 24px",
             backgroundColor: "#ffffff",
@@ -452,8 +464,8 @@ export default function SopaDeLetras() {
               </p>
               <button
                 onClick={siguienteNivel}
-                onTouchStart={(e) => e.currentTarget.style.transform = "scale(0.95)"}
-                onTouchEnd={(e) => e.currentTarget.style.transform = "scale(1)"}
+                onTouchStart={(e: React.TouchEvent<HTMLButtonElement>) => e.currentTarget.style.transform = "scale(0.95)"}
+                onTouchEnd={(e: React.TouchEvent<HTMLButtonElement>) => e.currentTarget.style.transform = "scale(1)"}
                 style={{
                   padding: "14px 32px",
                   backgroundColor: "#0984e3",

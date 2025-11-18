@@ -1,34 +1,45 @@
-"use client";
-import Link from "next/link";
+// app/page.tsx
+import Link from 'next/link';
+import FondoVanta from './components/FondoVanta'; // Ajusta la ruta si es necesario
+import styles from './page.module.css';
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-800 p-8">
-      <h1 className="text-4xl font-bold mb-8 text-blue-700">🚀 Proyecto de Desarrollo Web</h1>
-      <p className="mb-6 text-lg text-gray-600">Selecciona una de las actividades:</p>
+    <>
+      {/* El fondo interactivo se renderiza aquí */}
+      <FondoVanta />
 
-      <nav className="flex flex-col gap-4 w-full max-w-xs">
-        <Link
-          href="/sopa_letras"
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg text-center transition"
-        >
-          🧩 Sopa de Letras
-        </Link>
+      <main className={styles.main}>
+        <div className={styles.titleContainer}>
+          <h1 className={styles.title}>
+            <span className={styles.titleEmoji}>🧠</span>
+            JuegoManía
+          </h1>
+          <p className={styles.subtitle}>
+            Selecciona una actividad para desafiar tu mente
+          </p>
+        </div>
 
-        <Link
-          href="/2048_juego"
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg text-center transition"
-        >
-          🎮 Página 2
-        </Link>
+        {/* Los 3 botones ahora son "tarjetas" que enlazan a tus juegos */}
+        <div className={styles.cardGrid}>
+          
+          <Link href="/sopa_letras" className={styles.card}>
+            <span className={styles.cardEmoji}>🧩</span>
+            Sopa de Letras
+          </Link>
+          
+          <Link href="/2048_juego" className={styles.card}>
+            <span className={styles.cardEmoji}>🔢</span>
+            Juego 2048
+          </Link>
 
-        <Link
-          href="/pagina3"
-          className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 rounded-lg text-center transition"
-        >
-          ⚙️ Página 3
-        </Link>
-      </nav>
-    </main>
+          <Link href="/mente_activa" className={styles.card}>
+            <span className={styles.cardEmoji}>🎴</span>
+            Mente Activa
+          </Link>
+          
+        </div>
+      </main>
+    </>
   );
 }
